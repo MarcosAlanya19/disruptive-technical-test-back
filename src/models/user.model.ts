@@ -1,7 +1,7 @@
 import { getModelForClass, prop } from '@typegoose/typegoose';
 import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
 
-class User extends TimeStamps {
+export class User extends TimeStamps {
   @prop({ required: true })
   public username!: string;
 
@@ -13,4 +13,5 @@ class User extends TimeStamps {
 }
 
 const UserModel = getModelForClass(User);
+export type TypeUser = InstanceType<typeof UserModel>;
 export default UserModel;

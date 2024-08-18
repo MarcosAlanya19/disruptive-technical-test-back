@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import UserModel from '../models/user.model';
 import { authService } from '../services/AuthService';
-import { comparePasswords, hashPassword } from '../utils/bcryptHelpers.util';
-import { createAccessToken } from '../utils/jwt.util';
 import { UserRequest } from '../types/authRequest';
+import { comparePasswords, hashPassword } from '../utils/bcryptHelpers.util';
+import { createAccessToken, verifyToken } from '../utils/jwt.util';
 
 class AuthController {
   async register(req: Request, res: Response): Promise<Response> {
@@ -119,7 +119,7 @@ class AuthController {
     }
   }
 
-  async profile(req: Request, res: Response) {
+  async profile(req: Request, res: Response): Promise<Response> {
     const userRequest = await authService.findUserById((req as UserRequest).user.uuid);
 
     try {
@@ -145,6 +145,44 @@ class AuthController {
       return res.status(500).json({
         success: false,
         message: 'Error al obtener el perfil del usuario.',
+        error: error.message,
+      });
+    }
+  }
+
+  async verifyToken(req: Request, res: Response): Promise<Response> {
+    const { token } = req.cookies;
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'No autorizado. Token no proporcionado.',
+      });
+    }
+
+    try {
+      const payload = await verifyToken(token);
+      const userFound = await authService.findUserById(payload.uuid);
+
+      if (!userFound) {
+        return res.status(401).json({
+          success: false,
+          message: 'No autorizado. Usuario no encontrado.',
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          uuid: userFound._id,
+          username: userFound.username,
+          email: userFound.email,
+        },
+      });
+    } catch (error: any) {
+      return res.status(500).json({
+        success: false,
+        message: 'Error al verificar el token.',
         error: error.message,
       });
     }
