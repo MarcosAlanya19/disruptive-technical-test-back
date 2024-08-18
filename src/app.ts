@@ -1,4 +1,5 @@
 import express from 'express';
+import authController from './routes/auth.routes';
 
 class Application {
   app: express.Application;
@@ -14,9 +15,7 @@ class Application {
   }
 
   private routes() {
-    this.app.get('/', (req, res) => {
-      res.send('Hello, World!');
-    });
+    this.app.use('/api', authController);
   }
 
   start() {
