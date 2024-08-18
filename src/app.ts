@@ -1,5 +1,6 @@
 import express from 'express';
 import authController from './routes/auth.routes';
+import cookieParser from 'cookie-parser';
 
 class Application {
   app: express.Application;
@@ -12,6 +13,7 @@ class Application {
 
   middleware() {
     this.app.use(express.json());
+    this.app.use(cookieParser())
   }
 
   private routes() {
