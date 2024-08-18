@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import UserModel from '../models/user.model';
+import { authService } from '../services/AuthService';
 import { comparePasswords, hashPassword } from '../utils/bcryptHelpers.util';
 import { createAccessToken } from '../utils/jwt.util';
-import { authService } from '../services/auth.services';
+import { UserRequest } from '../types/authRequest';
 
 class AuthController {
   async register(req: Request, res: Response): Promise<Response> {
@@ -113,6 +114,37 @@ class AuthController {
       return res.status(500).json({
         success: false,
         message: 'Error al cerrar sesión.',
+        error: error.message,
+      });
+    }
+  }
+
+  async profile(req: Request, res: Response) {
+    const userRequest = await authService.findUserById((req as UserRequest).user.uuid);
+
+    try {
+      if (!userRequest) {
+        return res.status(409).json({
+          success: false,
+          message: 'Usuario no encontrado.',
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Usuario encontrado con exito.',
+        data: {
+          uuid: userRequest._id,
+          username: userRequest.username,
+          email: userRequest.email,
+          createdAt: userRequest.createdAt,
+          updatedAt: userRequest.updatedAt,
+        },
+      });
+    } catch (error: any) {
+      return res.status(500).json({
+        success: false,
+        message: 'Error al obtener el perfil del usuario.',
         error: error.message,
       });
     }
