@@ -1,7 +1,8 @@
 import { getModelForClass, prop } from '@typegoose/typegoose';
+import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
 
-class User {
-  @prop({ required: true, unique: true })
+class User extends TimeStamps {
+  @prop({ required: true })
   public username!: string;
 
   @prop({ required: true, unique: true })
