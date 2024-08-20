@@ -23,7 +23,7 @@ class ContentController {
 
       const user = await UserModel.findById((req as UserRequest).user?.uuid);
 
-      console.log({req: (req as UserRequest).user})
+      console.log({ req: (req as UserRequest).user });
       if (!user) {
         return res.status(400).json({ success: false, message: 'Usuario no encontrado' });
       }
@@ -66,7 +66,22 @@ class ContentController {
 
   async getContents(req: Request, res: Response): Promise<Response> {
     try {
-      const contents = await ContentModel.find().populate('categoryId').populate('themeId');
+      const { category, theme, name } = req.query;
+
+      const filter: Record<string, any> = {};
+      if (category) {
+        filter['categoryId'] = category;
+      }
+
+      if (theme) {
+        filter['themeId'] = theme;
+      }
+
+      if (name) {
+        filter['title'] = { $regex: new RegExp(name as string, 'i') };
+      }
+
+      const contents = await ContentModel.find(filter).populate('categoryId').populate('themeId').sort({ 'categoryId.name': 1, 'themeId.name': 1 });
 
       return res.status(200).json({
         success: true,
@@ -83,6 +98,28 @@ class ContentController {
       return res.status(500).json({
         success: false,
         message: 'Error al obtener los contenidos.',
+        error: error.message,
+      });
+    }
+  }
+
+  async getContentNames(req: Request, res: Response): Promise<Response> {
+    try {
+      const contents = await ContentModel.find().select('title _id').sort({ title: 1 });
+
+      const response = contents.map((content) => ({
+        name: content.title,
+        uuid: content._id.toString(),
+      }));
+
+      return res.status(200).json({
+        success: true,
+        data: response,
+      });
+    } catch (error: any) {
+      return res.status(500).json({
+        success: false,
+        message: 'Error al obtener los nombres de los contenidos.',
         error: error.message,
       });
     }

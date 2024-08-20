@@ -7,6 +7,7 @@ import categoryRoutes from './routes/category.routes';
 import contentsRoutes from './routes/content.routes';
 import themesRoutes from './routes/theme.routes';
 import usersRoutes from './routes/user.routes';
+import { config } from './config';
 
 class Application {
   app: express.Application;
@@ -20,13 +21,12 @@ class Application {
   middleware() {
     this.app.use(
       cors({
-        origin: 'http://localhost:5173',
+        origin: config.cors.origin,
         credentials: true,
       })
     );
     this.app.use(express.json());
     this.app.use(cookieParser());
-    // this.app.use(errorHandler);
   }
 
   private routes() {
@@ -38,8 +38,8 @@ class Application {
   }
 
   start() {
-    this.app.listen(3000, () => {
-      console.log('Server is running on port 3000');
+    this.app.listen(config.PORT, () => {
+      console.log(`Server is running on port ${config.PORT}`);
     });
   }
 }
