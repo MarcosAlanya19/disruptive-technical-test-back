@@ -2,7 +2,6 @@ import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
 import { User, UserModel } from '../models/user.model';
-import { authService } from '../services/AuthService';
 import { comparePasswords, hashPassword } from '../utils/bcryptHelpers.util';
 import { createAccessToken, verifyToken } from '../utils/jwt.util';
 
@@ -19,7 +18,7 @@ class AuthController {
     }
 
     try {
-      const existingUser = await authService.checkIfUserExists({ email });
+      const existingUser = await UserModel.findOne({ email });
       if (existingUser) {
         return res.status(409).json({
           success: false,
@@ -63,7 +62,7 @@ class AuthController {
     }
 
     try {
-      const userFound = await authService.checkIfUserExists({ email });
+      const userFound = await UserModel.findOne({ email });
 
       if (!userFound) {
         return res.status(404).json({
@@ -125,7 +124,7 @@ class AuthController {
   }
 
   async profile(req: Request, res: Response): Promise<Response> {
-    const userRequest = await authService.findUserById((req as any).user.uuid);
+    const userRequest = await UserModel.findById((req as any).user.uuid);
 
     try {
       if (!userRequest) {
@@ -167,7 +166,7 @@ class AuthController {
 
     try {
       const payload = await verifyToken(token);
-      const userFound = await authService.findUserById(payload.uuid);
+      const userFound = await UserModel.findById(payload.uuid);
 
       if (!userFound) {
         return res.status(401).json({
