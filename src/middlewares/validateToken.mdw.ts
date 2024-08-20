@@ -12,7 +12,7 @@ export const authRequired = async (req: Request, res: Response, next: NextFuncti
 
   try {
     const payload = await verifyToken(token);
-    (req as UserRequest).user = payload
+    (req as any).user = payload
     next();
   } catch (error) {
     return res.status(401).json({ message: 'El token no es válido', success: false });

@@ -1,17 +1,21 @@
 import cookieParser from 'cookie-parser';
-import express from 'express';
 import cors from 'cors';
+import express from 'express';
 
-import authController from './routes/auth.routes';
-import tasksController from './routes/tasks.routes';
+import authRoutes from './routes/auth.routes';
+import categoryRoutes from './routes/category.routes';
+import contentsRoutes from './routes/content.routes';
+import themesRoutes from './routes/theme.routes';
+import usersRoutes from './routes/user.routes';
+import { errorHandler } from './middlewares/errorHandler';
 
 class Application {
   app: express.Application;
 
   constructor() {
     this.app = express();
-    this.middleware();
     this.routes();
+    this.middleware();
   }
 
   middleware() {
@@ -23,11 +27,15 @@ class Application {
     );
     this.app.use(express.json());
     this.app.use(cookieParser());
+    this.app.use(errorHandler);
   }
 
   private routes() {
-    this.app.use('/api', authController);
-    this.app.use('/api', tasksController);
+    this.app.use('/api', authRoutes);
+    this.app.use('/api', categoryRoutes);
+    this.app.use('/api', themesRoutes);
+    this.app.use('/api', contentsRoutes);
+    this.app.use('/api', usersRoutes);
   }
 
   start() {
