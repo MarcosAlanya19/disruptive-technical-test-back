@@ -1,7 +1,7 @@
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { Request, Response } from 'express';
-import { ThemeModel, TypeTheme } from '../models/theme.model';
+import { ThemeModel } from '../models/theme.model';
 
 class ThemeController {
   async createTheme(req: Request, res: Response): Promise<Response> {

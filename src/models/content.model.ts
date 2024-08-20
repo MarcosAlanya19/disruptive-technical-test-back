@@ -2,7 +2,6 @@ import { getModelForClass, modelOptions, prop, Ref } from '@typegoose/typegoose'
 import { IsNotEmpty, IsOptional, IsString, IsUrl, Length } from 'class-validator';
 import { Category } from './category.model';
 import { Theme } from './theme.model';
-import { User } from './user.model';
 
 @modelOptions({ schemaOptions: { collection: 'contents' } })
 class Content {

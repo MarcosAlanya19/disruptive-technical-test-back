@@ -1,7 +1,6 @@
-import { plainToClass, plainToInstance } from 'class-transformer';
+import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
-import { InternalServerError } from '../errors/HttpError';
 import { User, UserModel } from '../models/user.model';
 import { authService } from '../services/AuthService';
 import { comparePasswords, hashPassword } from '../utils/bcryptHelpers.util';
@@ -9,7 +8,15 @@ import { createAccessToken, verifyToken } from '../utils/jwt.util';
 
 class AuthController {
   async register(req: Request, res: Response): Promise<Response> {
-    const { email, password, role, username } = req.body as User;
+    const { email, password, role, username } = plainToClass(User, req.body);
+    const errors = await validate({ email, password });
+
+    if (errors.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: errors.map((err) => Object.values(err.constraints || {})).flat(),
+      });
+    }
 
     try {
       const existingUser = await authService.checkIfUserExists({ email });
@@ -32,7 +39,7 @@ class AuthController {
           username: userSaved.username,
           email: userSaved.email,
           role: userSaved.role,
-          credits: userSaved.credits
+          credits: userSaved.credits,
         },
       });
     } catch (error: any) {
@@ -86,7 +93,7 @@ class AuthController {
           createdAt: userFound.createdAt,
           updatedAt: userFound.updatedAt,
           role: userFound.role,
-          credits: userFound.credits
+          credits: userFound.credits,
         },
       });
     } catch (error: any) {

@@ -7,15 +7,14 @@ import categoryRoutes from './routes/category.routes';
 import contentsRoutes from './routes/content.routes';
 import themesRoutes from './routes/theme.routes';
 import usersRoutes from './routes/user.routes';
-import { errorHandler } from './middlewares/errorHandler';
 
 class Application {
   app: express.Application;
 
   constructor() {
     this.app = express();
-    this.routes();
     this.middleware();
+    this.routes();
   }
 
   middleware() {
@@ -27,7 +26,7 @@ class Application {
     );
     this.app.use(express.json());
     this.app.use(cookieParser());
-    this.app.use(errorHandler);
+    // this.app.use(errorHandler);
   }
 
   private routes() {

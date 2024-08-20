@@ -33,20 +33,3 @@ export class User extends TimeStamps {
 
 export const UserModel = getModelForClass(User);
 export type TypeUser = InstanceType<typeof UserModel>;
-
-export class UserDto {
-  @Length(3, 20, { message: 'El nombre de usuario debe tener entre 3 y 20 caracteres.' })
-  public username!: string;
-
-  @IsEmail({}, { message: 'El correo electrónico no es válido.' })
-  public email!: string;
-
-  @IsNotEmpty({ message: 'El campo de créditos no puede estar vacío.' })
-  public credits!: number;
-
-  @IsEnum(UserRole, { message: 'El rol de usuario no es válido.' })
-  public role!: UserRole;
-
-  @IsNotEmpty({ message: 'La contraseña no puede estar vacía.' })
-  public password!: string;
-}
