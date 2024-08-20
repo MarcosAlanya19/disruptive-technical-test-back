@@ -3,6 +3,7 @@ import { config } from '../config';
 
 export interface IUserPayload {
   uuid: string;
+  role: string
 }
 
 export const createAccessToken = async (payload: IUserPayload): Promise<string> => {
