@@ -22,8 +22,6 @@ class ContentController {
       }
 
       const user = await UserModel.findById((req as any).user.uuid);
-
-
       if (!user) {
         return res.status(400).json({ success: false, message: 'Usuario no encontrado' });
       }
@@ -47,6 +45,8 @@ class ContentController {
       });
 
       const savedContent = await newContent.save();
+      user.credits += 1;
+      await user.save();
 
       return res.status(201).json({
         success: true,
@@ -64,14 +64,11 @@ class ContentController {
 
   async getContents(req: Request, res: Response): Promise<Response> {
     try {
-      const contents = await ContentModel.find()
-      .populate('credits')
-      .populate('categoryId')
-      .populate('themeId');
+      const contents = await ContentModel.find().populate('credits').populate('categoryId').populate('themeId');
 
       return res.status(200).json({
         success: true,
-        data: contents.map(contents => ({
+        data: contents.map((contents) => ({
           uuid: contents.id,
           title: contents.title,
           textContent: contents.textContent,

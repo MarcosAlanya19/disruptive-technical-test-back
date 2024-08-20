@@ -1,11 +1,11 @@
-import { plainToInstance } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
 import { InternalServerError } from '../errors/HttpError';
 import { User, UserModel } from '../models/user.model';
 import { authService } from '../services/AuthService';
-import { hashPassword } from '../utils/bcryptHelpers.util';
-import { verifyToken } from '../utils/jwt.util';
+import { comparePasswords, hashPassword } from '../utils/bcryptHelpers.util';
+import { createAccessToken, verifyToken } from '../utils/jwt.util';
 
 class AuthController {
   async register(req: Request, res: Response): Promise<Response> {
@@ -32,6 +32,7 @@ class AuthController {
           username: userSaved.username,
           email: userSaved.email,
           role: userSaved.role,
+          credits: userSaved.credits
         },
       });
     } catch (error: any) {
@@ -43,63 +44,58 @@ class AuthController {
     }
   }
 
-  async login(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      throw new InternalServerError('texto');
-    } catch (error) {
-      console.log(error);
-      next(error);
+  async login(req: Request, res: Response, next: NextFunction): Promise<Response> {
+    const { email, password } = plainToClass(UserModel, req.body);
+    const errors = await validate({ email, password });
+
+    if (errors.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: errors.map((err) => Object.values(err.constraints || {})).flat(),
+      });
     }
-    // const { email, password } = plainToClass(UserModel, req.body);
-    // const errors = await validate({ email, password });
 
-    // if (errors.length > 0) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: errors.map((err) => Object.values(err.constraints || {})).flat(),
-    //   });
-    // }
+    try {
+      const userFound = await authService.checkIfUserExists({ email });
 
-    // try {
-    //   const userFound = await authService.checkIfUserExists({ email });
+      if (!userFound) {
+        return res.status(404).json({
+          success: false,
+          message: 'Credenciales incorrectas.',
+        });
+      }
 
-    //   if (!userFound) {
-    //     return res.status(404).json({
-    //       success: false,
-    //       message: 'Credenciales incorrectas.',
-    //     });
-    //   }
+      const isMatch = await comparePasswords(password, userFound.password);
+      if (!isMatch) {
+        return res.status(400).json({
+          success: false,
+          message: 'Credenciales incorrectas.',
+        });
+      }
 
-    //   const isMatch = await comparePasswords(password, userFound.password);
-    //   if (!isMatch) {
-    //     return res.status(400).json({
-    //       success: false,
-    //       message: 'Credenciales incorrectas.',
-    //     });
-    //   }
+      const token = await createAccessToken({ uuid: userFound._id.toString(), role: userFound.role });
+      res.cookie('token', token);
 
-    //   const token = await createAccessToken({ uuid: userFound._id.toString(), role: userFound.role });
-    //   res.cookie('token', token);
-
-    //   return res.status(200).json({
-    //     success: true,
-    //     message: 'Inicio de sesión exitoso.',
-    //     data: {
-    //       uuid: userFound._id,
-    //       username: userFound.username,
-    //       email: userFound.email,
-    //       createdAt: userFound.createdAt,
-    //       updatedAt: userFound.updatedAt,
-    //       role: userFound.role,
-    //     },
-    //   });
-    // } catch (error: any) {
-    //   return res.status(500).json({
-    //     success: false,
-    //     message: 'Error al iniciar sesión.',
-    //     error: error.message,
-    //   });
-    // }
+      return res.status(200).json({
+        success: true,
+        message: 'Inicio de sesión exitoso.',
+        data: {
+          uuid: userFound._id,
+          username: userFound.username,
+          email: userFound.email,
+          createdAt: userFound.createdAt,
+          updatedAt: userFound.updatedAt,
+          role: userFound.role,
+          credits: userFound.credits
+        },
+      });
+    } catch (error: any) {
+      return res.status(500).json({
+        success: false,
+        message: 'Error al iniciar sesión.',
+        error: error.message,
+      });
+    }
   }
 
   async logout(req: Request, res: Response): Promise<Response> {
