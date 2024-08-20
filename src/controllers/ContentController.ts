@@ -21,7 +21,9 @@ class ContentController {
         });
       }
 
-      const user = await UserModel.findById((req as any).user.uuid);
+      const user = await UserModel.findById((req as UserRequest).user?.uuid);
+
+      console.log({req: (req as UserRequest).user})
       if (!user) {
         return res.status(400).json({ success: false, message: 'Usuario no encontrado' });
       }
@@ -64,7 +66,7 @@ class ContentController {
 
   async getContents(req: Request, res: Response): Promise<Response> {
     try {
-      const contents = await ContentModel.find().populate('credits').populate('categoryId').populate('themeId');
+      const contents = await ContentModel.find().populate('categoryId').populate('themeId');
 
       return res.status(200).json({
         success: true,

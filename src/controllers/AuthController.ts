@@ -4,6 +4,7 @@ import { NextFunction, Request, Response } from 'express';
 import { User, UserModel } from '../models/user.model';
 import { comparePasswords, hashPassword } from '../utils/bcryptHelpers.util';
 import { createAccessToken, verifyToken } from '../utils/jwt.util';
+import { UserRequest } from '../types/authRequest';
 
 class AuthController {
   async register(req: Request, res: Response): Promise<Response> {
@@ -27,7 +28,7 @@ class AuthController {
       }
 
       const hashedPassword = await hashPassword(password);
-      const newUser = new UserModel({ email, role, username, password: hashedPassword });
+      const newUser = new UserModel({ email, role, username, password: hashedPassword, credits: 0 });
       const userSaved = await newUser.save();
 
       return res.status(201).json({
@@ -124,7 +125,7 @@ class AuthController {
   }
 
   async profile(req: Request, res: Response): Promise<Response> {
-    const userRequest = await UserModel.findById((req as any).user.uuid);
+    const userRequest = await UserModel.findById((req as UserRequest).user.uuid);
 
     try {
       if (!userRequest) {
@@ -182,6 +183,7 @@ class AuthController {
           username: userFound.username,
           email: userFound.email,
           role: userFound.role,
+          credits: userFound.credits
         },
       });
     } catch (error: any) {
