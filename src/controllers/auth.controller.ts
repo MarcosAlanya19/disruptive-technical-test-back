@@ -22,7 +22,7 @@ class AuthController {
         },
       });
     } catch (error: any) {
-      next(error)
+      next(error);
     }
   }
 
@@ -30,10 +30,10 @@ class AuthController {
     const { email, password } = req.body as LoginDto;
     try {
       const { token, user } = await authService.login(email, password);
-      console.log({ token })
-      res.cookie('token', token);
+      res.setHeader('Authorization', `Bearer ${token}`);
 
       return res.status(200).json({
+        token,
         success: true,
         message: 'Inicio de sesión exitoso.',
         data: {
@@ -47,22 +47,18 @@ class AuthController {
         },
       });
     } catch (error: any) {
-      next(error)
+      next(error);
     }
   }
 
   async logout(req: Request, res: Response, next: NextFunction) {
     try {
-      res.cookie('token', '', {
-        expires: await authService.logout(),
-      });
-
       return res.status(200).json({
         success: true,
         message: 'Sesión cerrada exitosamente.',
       });
     } catch (error: any) {
-      next(error)
+      next(error);
       return res.status(500).json({
         success: false,
         message: 'Error al cerrar sesión.',
@@ -95,14 +91,14 @@ class AuthController {
   }
 
   async verifyToken(req: Request, res: Response, next: NextFunction) {
-    const { token } = req.cookies;
-
-    if (!token) {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({
         success: false,
-        message: 'No autorizado. Token no proporcionado.',
+        message: 'No autorizado. Token no proporcionado o formato incorrecto.',
       });
     }
+    const token = authHeader.substring(7);
 
     try {
       const user = await authService.verifyToken(token);
@@ -118,7 +114,7 @@ class AuthController {
         },
       });
     } catch (error: any) {
-      next(error)
+      next(error);
     }
   }
 }

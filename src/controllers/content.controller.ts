@@ -7,19 +7,19 @@ import { UserRequest } from '../types/authRequest';
 
 class ContentController {
   async createContent(req: Request, res: Response, next: NextFunction) {
+    const { categoryId, themeId, title, textContent, url } = req.body as Content;
+
     try {
-      const contentData = req.body as Content;
 
       const userId = (req as UserRequest).user?.uuid;
-
-      const savedContent = await contentService.createContent(contentData, userId!);
+      const savedContent = await contentService.createContent({categoryId, themeId, title, textContent, url}, userId);
       return res.status(201).json({
         success: true,
         message: 'Contenido creado exitosamente.',
         data: savedContent,
       });
     } catch (error: any) {
-      next(error)
+      next(error);
     }
   }
 

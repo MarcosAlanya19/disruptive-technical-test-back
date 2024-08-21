@@ -1,4 +1,3 @@
-import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { NextFunction, Request, Response } from 'express';
 
@@ -29,16 +28,15 @@ class Application {
         credentials: true,
       })
     );
-    this.app.use(cookieParser());
   }
 
   private routes(): void {
+    this.app.use('/api', seedRoutes);
     this.app.use('/api', authRoutes);
     this.app.use('/api', categoryRoutes);
     this.app.use('/api', themesRoutes);
     this.app.use('/api', contentsRoutes);
     this.app.use('/api', usersRoutes);
-    this.app.use('/api', seedRoutes);
   }
 
   private errorHandling(): void {

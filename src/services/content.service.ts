@@ -5,8 +5,9 @@ import { ThemeModel } from '../models/theme.model';
 import { UserModel } from '../models/user.model';
 
 class ContentService {
-  async createContent(contentData: Content, userId: string) {
+  async createContent(contentData: Omit<Content, "userId">, userId: string) {
     const user = await UserModel.findById(userId);
+
     if (!user) {
       throw new BadRequestError('Usuario no encontrado');
     }
@@ -27,10 +28,11 @@ class ContentService {
       url: contentData.url,
       categoryId: contentData.categoryId,
       themeId: contentData.themeId,
-      userId: user._id
+      userId,
     });
 
     const savedContent = await newContent.save();
+
     user.credits += 1;
     await user.save();
 
@@ -38,10 +40,7 @@ class ContentService {
   }
 
   async getContents(filter: Record<string, any>) {
-    return await ContentModel.find(filter)
-      .populate('categoryId')
-      .populate('themeId')
-      .sort({ 'categoryId.name': 1, 'themeId.name': 1 });
+    return await ContentModel.find(filter).populate('categoryId').populate('themeId').sort({ 'categoryId.name': 1, 'themeId.name': 1 });
   }
 
   async getContentNames() {
@@ -49,10 +48,7 @@ class ContentService {
   }
 
   async getContentById(uuid: string) {
-    const content = await ContentModel.findById(uuid)
-      .populate('credits', 'username')
-      .populate('categoryId', 'name')
-      .populate('themeId', 'name');
+    const content = await ContentModel.findById(uuid).populate('credits', 'username').populate('categoryId', 'name').populate('themeId', 'name');
     if (!content) {
       throw new BadRequestError('Contenido no encontrado');
     }
