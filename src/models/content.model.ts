@@ -2,6 +2,7 @@ import { getModelForClass, modelOptions, prop, Ref } from '@typegoose/typegoose'
 import { IsNotEmpty, IsOptional, IsString, IsUrl, Length } from 'class-validator';
 import { Category } from './category.model';
 import { Theme } from './theme.model';
+import { User } from './user.model';
 
 @modelOptions({ schemaOptions: { collection: 'contents' } })
 class Content {
@@ -27,6 +28,10 @@ class Content {
   @prop({ ref: () => Theme, required: true })
   @IsNotEmpty({ message: 'La temática es obligatoria.' })
   public themeId!: Ref<Theme>;
+
+  @prop({ ref: () => User, required: true })
+  @IsNotEmpty({ message: 'El user es obligatoria.' })
+  public userId!: Ref<User>;
 }
 
 const ContentModel = getModelForClass(Content);

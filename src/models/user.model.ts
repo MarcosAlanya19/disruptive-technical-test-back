@@ -2,7 +2,7 @@ import { getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
 import { IsEmail, IsEnum, IsNotEmpty, Length } from 'class-validator';
 
-enum UserRole {
+export enum UserRole {
   READER = 'Reader',
   CREATOR = 'Creator',
   ADMIN = 'Admin',
@@ -18,8 +18,7 @@ export class User extends TimeStamps {
   @IsEmail({}, { message: 'El correo electrónico no es válido.' })
   public email!: string;
 
-  @prop({ required: true, defaul: 0 })
-  @IsNotEmpty({ message: 'El campo de créditos no puede estar vacío.' })
+  @prop({ required: false, default: 0 })
   public credits!: number;
 
   @prop({ enum: UserRole, default: UserRole.READER })

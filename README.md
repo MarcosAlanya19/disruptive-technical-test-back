@@ -28,8 +28,7 @@ CORS_ORIGIN=http://localhost:5173
 URL_MONGO="mongodb://d-user:d-password@localhost:27017/disruptive?authSource=admin"
 ```
 En la variable **URL_MONGO** va la url de conexion de la base de datos
-En la variable **ENV** se asigna el modo desarrollador (dev) o produccion (prod). Si se asigna dev el api es accesible para todo el mundo
-En la variable **CORS_ORIGIN** cuando la variable ENV este en prod solo se permitia el consumo en esta pagina web
+En la variable **CORS_ORIGIN** cuando la variable se necesita asignar el dominio de la web que va consumir esta API
 ## Flujo
 - Archivo collection_example para tener configuracion base en postman
 
