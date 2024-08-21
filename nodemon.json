@@ -3,5 +3,5 @@
   "watch": ["src"],
   "ext": "ts",
   "restartable": "rs",
-  "exec": "ENV=dev ts-node src/index.ts"
+  "exec": "ts-node src/index.ts"
 }

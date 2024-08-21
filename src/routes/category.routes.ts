@@ -1,9 +1,11 @@
 import { Router } from 'express';
-import { categoryController } from '../controllers/CategoryController';
+import { categoryController } from '../controllers/category.controller';
+import { validateSchema } from '../middlewares/validateSchema';
+import { Category } from '../models/category.model';
 
 const router = Router();
 
-router.post('/categories', categoryController.createCategory);
+router.post('/categories', validateSchema(Category), categoryController.createCategory);
 router.get('/categories', categoryController.getCategories);
 router.get('/categories/:uuid', categoryController.getCategoryById);
 router.put('/categories/:uuid', categoryController.updateCategory);

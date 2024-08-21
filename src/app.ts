@@ -1,53 +1,57 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 
 import { config } from './config';
+import { errorHandler } from './middlewares/errorHandler';
 import authRoutes from './routes/auth.routes';
 import categoryRoutes from './routes/category.routes';
 import contentsRoutes from './routes/content.routes';
+import seedRoutes from './routes/seed.routes';
 import themesRoutes from './routes/theme.routes';
 import usersRoutes from './routes/user.routes';
 
 class Application {
-  app: express.Application;
+  public app: express.Application;
 
   constructor() {
     this.app = express();
     this.middleware();
     this.routes();
+    this.errorHandling(); // Asegurarse de manejar errores al final
   }
 
-  middleware() {
-    if (config().env === "dev") {
-      this.app.use(
-        cors({
-          origin: "*",
-        })
-      );
-    } else {
-      this.app.use(
-        cors({
-          origin: config().cors.CORS_ORIGIN,
-          credentials: true,
-        })
-      );
-    }
+  private middleware(): void {
     this.app.use(express.json());
+    this.app.use(
+      cors({
+        origin: config().cors.CORS_ORIGIN,
+        credentials: true,
+      })
+    );
     this.app.use(cookieParser());
   }
 
-  private routes() {
+  private routes(): void {
     this.app.use('/api', authRoutes);
     this.app.use('/api', categoryRoutes);
     this.app.use('/api', themesRoutes);
     this.app.use('/api', contentsRoutes);
     this.app.use('/api', usersRoutes);
+    this.app.use('/api', seedRoutes);
   }
 
-  start() {
-    this.app.listen(config().port, () => {
-      console.log(`Server is running on port ${config().port}`);
+  private errorHandling(): void {
+    this.app.use(errorHandler); // Manejo de errores debe ser el último middleware
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
+      res.status(404).json({ message: 'Route not found' });
+    });
+  }
+
+  public start(): void {
+    const port = config().port;
+    this.app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
     });
   }
 }

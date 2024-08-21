@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
-import { verifyToken } from '../utils/jwt.util';
 import { UserRequest } from '../types/authRequest';
+import { verifyToken } from '../utils/jwt.util';
 
 export const authRequired = async (req: Request, res: Response, next: NextFunction) => {
+  console.log({ cookies: req.cookies })
   const { token } = req.cookies;
 
   if (!token) {

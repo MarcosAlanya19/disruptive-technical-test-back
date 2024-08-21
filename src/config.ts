@@ -8,7 +8,7 @@ export const config = () => ({
     REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN || '7d',
   },
   cors: {
-    CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
   },
   mongoDB: {
     URL_MONGO: process.env.URL_MONGO || ''

@@ -1,11 +1,14 @@
 import { Router } from 'express';
-import { authController } from '../controllers/AuthController';
+import { authController } from '../controllers/auth.controller';
+import { LoginDto } from '../dtos/Login.dto';
+import { validateSchema } from '../middlewares/validateSchema';
 import { authRequired } from '../middlewares/validateToken.mdw';
+import { User } from '../models/user.model';
 
 const router = Router();
 
-router.post('/register', authController.register);
-router.post('/login', authController.login);
+router.post('/register', validateSchema(User), authController.register);
+router.post('/login', validateSchema(LoginDto), authController.login);
 router.post('/logout', authController.logout);
 router.get('/profile', authRequired, authController.profile);
 router.get('/verify', authController.verifyToken);
