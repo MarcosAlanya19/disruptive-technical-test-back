@@ -53,16 +53,16 @@ export class SeedService {
   }
   async createUsers() {
     const user1: User = {
-      email: "maximo@gmail.com",
+      email: "doroty@gmail.com",
       password: "123456789",
-      username: "maximo",
+      username: "doroty",
       role: UserRole.CREATOR,
       credits: 0,
     }
     const user2: User = {
-      email: "maximo1@gmail.com",
+      email: "marcos1@gmail.com",
       password: "123456789",
-      username: "maximo1",
+      username: "marcos1",
       role: UserRole.READER,
       credits: 0,
     }

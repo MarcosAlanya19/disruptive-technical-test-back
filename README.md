@@ -4,6 +4,12 @@ La aplicación se desarrolló con Node.js con Express y MongoDB como base de dat
 ## Objetivo
 > El objetivo de este proyecto es permitir que un administrador cree categorías de contenido y temáticas, y que los usuarios con diferentes roles (lectores, creadores, administradores) accedan y gestionen dicho contenido según sus permisos.
 
+## DataMock
+Para poblar la base de datos con datos de prueba, puedes utilizar el siguiente endpoint GET:
+
+Endpoint: https://localhost:3000/api/seed
+Ejecuta este endpoint para insertar datos mock en tu backend.
+
 ## Instalación
 
 ```sh
