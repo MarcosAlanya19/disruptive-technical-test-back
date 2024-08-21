@@ -9,7 +9,6 @@ const router = Router();
 
 router.post('/register', validateSchema(User), authController.register);
 router.post('/login', validateSchema(LoginDto), authController.login);
-router.post('/logout', authController.logout);
 router.get('/profile', authRequired, authController.profile);
 router.get('/verify', authController.verifyToken);
 
