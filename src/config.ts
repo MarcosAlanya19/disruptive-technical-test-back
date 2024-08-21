@@ -1,15 +1,16 @@
-import dotenv from 'dotenv';
 
-dotenv.config();
-
-export const config = {
-  PORT: process.env.PORT || 3000,
+export const config = () => ({
+  port: process.env.PORT || 3000,
+  env: process.env.ENV || 'dev',
   jwt: {
     TOKEN_SECRET: process.env.TOKEN_SECRET || 'default_secret_key',
-    jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1h',
-    refreshTokenExpiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || '7d',
+    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1h',
+    REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN || '7d',
   },
   cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:3000',
   },
-}
+  mongoDB: {
+    URL_MONGO: process.env.URL_MONGO || ''
+  }
+})

@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.ts",
-    "clean": "rimraf ./dist"
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "clean": "rimraf ./dist",
+    "start": "node dist/src/index.js"
   },
   "keywords": [],
   "author": "",

@@ -2,12 +2,12 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 
+import { config } from './config';
 import authRoutes from './routes/auth.routes';
 import categoryRoutes from './routes/category.routes';
 import contentsRoutes from './routes/content.routes';
 import themesRoutes from './routes/theme.routes';
 import usersRoutes from './routes/user.routes';
-import { config } from './config';
 
 class Application {
   app: express.Application;
@@ -19,12 +19,20 @@ class Application {
   }
 
   middleware() {
-    this.app.use(
-      cors({
-        origin: config.cors.origin,
-        credentials: true,
-      })
-    );
+    if (config().env === "dev") {
+      this.app.use(
+        cors({
+          origin: "*",
+        })
+      );
+    } else {
+      this.app.use(
+        cors({
+          origin: config().cors.CORS_ORIGIN,
+          credentials: true,
+        })
+      );
+    }
     this.app.use(express.json());
     this.app.use(cookieParser());
   }
@@ -38,8 +46,8 @@ class Application {
   }
 
   start() {
-    this.app.listen(config.PORT, () => {
-      console.log(`Server is running on port ${config.PORT}`);
+    this.app.listen(config().port, () => {
+      console.log(`Server is running on port ${config().port}`);
     });
   }
 }
