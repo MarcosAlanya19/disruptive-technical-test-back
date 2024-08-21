@@ -51,22 +51,6 @@ class AuthController {
     }
   }
 
-  async logout(req: Request, res: Response, next: NextFunction) {
-    try {
-      return res.status(200).json({
-        success: true,
-        message: 'Sesión cerrada exitosamente.',
-      });
-    } catch (error: any) {
-      next(error);
-      return res.status(500).json({
-        success: false,
-        message: 'Error al cerrar sesión.',
-        error: error.message,
-      });
-    }
-  }
-
   async profile(req: Request, res: Response, next: NextFunction): Promise<Response> {
     try {
       const user = await authService.getProfile((req as UserRequest).user.uuid);

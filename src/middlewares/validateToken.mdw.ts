@@ -14,6 +14,7 @@ export const authRequired = async (req: Request, res: Response, next: NextFuncti
   try {
     const payload = await verifyToken(token);
     (req as UserRequest).user = payload;
+    req.body.userId = payload.uuid;
     next();
   } catch (error) {
     return res.status(401).json({ message: 'Token no válido', success: false });
